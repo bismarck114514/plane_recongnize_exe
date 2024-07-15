@@ -16,6 +16,13 @@ class ResetPasswordWindow(QtWidgets.QWidget):
         self.setWindowTitle('重置密码')
         self.center()
 
+        # 创建一个QLabel作为背景
+        self.background_label = QtWidgets.QLabel(self)
+        self.background_pixmap = QtGui.QPixmap("data/reset_password_background.jpg")
+        self.background_label.setPixmap(self.background_pixmap.scaled(self.size(), QtCore.Qt.IgnoreAspectRatio, QtCore.Qt.SmoothTransformation))
+        self.background_label.setGeometry(0, 0, 1280, 720)
+        self.background_label.lower()  # 确保背景在所有控件之下
+
         layout = QtWidgets.QVBoxLayout()
 
         formLayout = QtWidgets.QFormLayout()
@@ -75,6 +82,16 @@ class ResetPasswordWindow(QtWidgets.QWidget):
 
         layout.setAlignment(QtCore.Qt.AlignCenter)  # 居中布局
         self.setLayout(layout)
+
+        # 添加resizeEvent处理程序以确保背景图片适应窗口大小的变化
+        self.installEventFilter(self)
+
+    def eventFilter(self, source, event):
+        if source is self and event.type() == QtCore.QEvent.Resize:
+            self.background_label.setPixmap(self.background_pixmap.scaled(self.size(), QtCore.Qt.IgnoreAspectRatio, QtCore.Qt.SmoothTransformation))
+            self.background_label.setGeometry(0, 0, self.width(), self.height())
+            return True
+        return super().eventFilter(source, event)
 
     def center(self):
         screen = QtWidgets.QDesktopWidget().screenGeometry()
